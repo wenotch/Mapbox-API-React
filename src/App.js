@@ -4,22 +4,36 @@ import "mapbox-gl/dist/mapbox-gl.css";
 
 export default function App() {
   const [location, setLocation] = useState([]);
+  const [lat, setlat] = useState(3);
+  const [long, setlong] = useState(5);
+
   const getLocation = () => {
     console.log("location getter ran");
-    navigator.geolocation.getCurrentPosition((position) => {
-      setLocation([
-        ...location,
-        [position.coords.longitude, position.coords.latitude],
-      ]);
-      console.log(location);
-    });
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLocation([
+          ...location,
+          [position.coords.longitude, position.coords.latitude],
+        ]);
+        setlat(position.coords.latitude);
+        setlong(position.coords.longitude);
+        console.log(location);
+      },
+      (err) => {
+        console.log(err);
+      },
+      {
+        enableHighAccuracy: true,
+      }
+    );
   };
   useEffect(() => {
     getLocation();
   }, []);
+
   const [viewport, setViewport] = useState({
-    latitude: 6.465422,
-    longitude: 3.406448,
+    latitude: lat,
+    longitude: long,
     zoom: 5,
   });
 
@@ -59,7 +73,13 @@ export default function App() {
   return (
     <>
       <MapGL
-        style={{ width: "100%", height: "400px" }}
+        style={{
+          width: "100vw",
+          height: "100%",
+          border: "0",
+          position: "absolute",
+          zIndex: -50,
+        }}
         mapStyle="mapbox://styles/mapbox/light-v9"
         accessToken={
           "pk.eyJ1IjoiZW1tYW51ZWxud2Fub2NoaWUiLCJhIjoiY2t0bGozd2YwMDJpcjJ1czh2aHVscmk1eCJ9.XlprBONdRkZdwS4NYdKbGw"
